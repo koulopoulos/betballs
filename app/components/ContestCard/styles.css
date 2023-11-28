@@ -1,0 +1,39 @@
+.contest-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 0.4em;
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+.contest-card:hover {
+    transform: scale(1.02);
+}
+
+.contest-card__header {
+    overflow: hidden;
+    border-radius: 0.4em;
+}
+
+.contest-card__content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4em;
+    margin-top: 0.6em;
+}
+
+.contest-card__date {
+    font-size: 0.8em;
+    line-height: 1.2;
+    font-weight: 400;
+    color: #1A1A1A;
+}
+
+.contest-card__title {
+    font-size: 0.8em;
+    font-weight: 600;
+    line-height: 1.2;
+    color: #1A1A1A;
+}
+

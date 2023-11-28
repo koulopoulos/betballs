@@ -1,0 +1,47 @@
+.team-logos {
+    position: relative;
+    display: flex;
+    flex-direction: row-reverse;
+    overflow: hidden;
+    padding-bottom: 50%;
+    height: 0;
+}
+
+.team-logos--wide {
+    padding-bottom: 25%;
+}
+
+.team-logos__wrapper {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+    height: 100%;
+}
+
+.team-logos__wrapper:first-child {
+    right: 0;
+}
+
+.team-logos__wrapper:last-child {
+    left: 0;
+}
+
+.team-logos__texture {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-repeat: repeat;
+    background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+    mix-blend-mode: multiply;
+    pointer-events: none;
+}
+
+.team-logos__logo {
+    position: absolute;
+    height: 50%;
+    z-index: 99;
+}

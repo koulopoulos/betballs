@@ -1,0 +1,56 @@
+.details__wrapper {
+    display: flex;
+    flex-direction: column;
+    background-color: #FAFAFA;
+}
+
+.details__content {
+    padding: 2em;
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+}
+
+.details__header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6em;
+}
+
+.details__date {
+    font-size: 1em;
+    font-weight: 400;
+}
+
+.details__title {
+    font-size: 2em;
+    font-weight: 600;
+    line-height: 1.33;
+}
+
+.details__records {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 0.6em;
+    margin-top: 0.4em;
+}
+
+.details__record-chip {
+    padding: 0.6em 1em;
+    border-radius: 4em;
+    color: #FAFAFA;
+    font-weight: 400;
+    font-size: 0.8em;
+}
+
+.details__divider {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #EAEAEA;
+    margin: 0;
+    padding: 0;
+}
+
+

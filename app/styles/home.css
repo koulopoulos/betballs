@@ -1,0 +1,21 @@
+.main__wrapper {
+    display: flex;
+    flex-direction: column;
+    padding: 2em;
+    gap: 2em;
+    background-color: #FAFAFA;
+}
+
+.main__title {
+    font-size: 2em;
+    font-weight: 600;
+}
+
+.main__divider {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #EAEAEA;
+    margin: 0;
+    padding: 0;
+}

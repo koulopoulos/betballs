@@ -1,0 +1,34 @@
+.primary-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 1.4em 2em;
+    gap: 1em;
+    background-color: #002B0F;
+}
+
+.primary-nav {
+    display: flex;
+}
+
+.primary-nav__list {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+}
+
+.primary-nav__item {
+    font-size: 0.9em;
+    font-weight: 400;
+}
+
+.primary-nav__item-link {
+    text-decoration: none;
+    color: #F0F0F0;
+}
+
+.primary-nav__item-link--active {
+    text-decoration: underline;
+    text-underline-offset: 0.4em;
+}
