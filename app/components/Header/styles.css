@@ -8,6 +8,10 @@
     background-color: #002B0F;
 }
 
+.primary-header__logo {
+    height: 12px;
+}
+
 .primary-nav {
     display: flex;
 }
@@ -19,7 +23,7 @@
 }
 
 .primary-nav__item {
-    font-size: 0.9em;
+    font-size: 0.8em;
     font-weight: 400;
 }
 
@@ -28,7 +32,21 @@
     color: #F0F0F0;
 }
 
+.primary-nav__item--profile {
+    color: #F0F0F0;
+}
+
 .primary-nav__item-link--active {
     text-decoration: underline;
     text-underline-offset: 0.4em;
+}
+
+@media screen and (min-width: 500px) {
+    .primary-header__logo {
+        height: 20px;
+    }
+
+    .primary-nav__item {
+        font-size: 0.9em;
+    }
 }

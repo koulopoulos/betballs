@@ -1,7 +1,9 @@
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
-import { Link, useLoaderData, useSearchParams } from '@remix-run/react';
-import ContestCard from '~/components/ContestCard/ContestCard';
+import { useLoaderData, useSearchParams } from '@remix-run/react';
+import ContestList from '~/components/ContestList/ContestList';
 import { getContestsByDate } from '~/server/contests';
+import '../styles/search.css';
+import { sortContestsByDate } from '~/utils/utils';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
@@ -13,7 +15,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const contests = await getContestsByDate(date);
 
-  return json({ contests });
+  return json({
+    contests: sortContestsByDate(contests),
+  });
 }
 
 export default function Search() {
@@ -23,34 +27,30 @@ export default function Search() {
   const searchDatetime = criteria || new Date().toISOString().slice(0, -8);
 
   return (
-    <main>
-      <h1>Contest Search</h1>
-      <form>
-        <label htmlFor='search-input' />
-        <input
-          type='datetime-local'
-          id='search-input'
-          name='criteria'
-          defaultValue={searchDatetime}
-        />
-        <input type='submit' value='Search' />
+    <main className='search__wrapper'>
+      <h1 className='search__title'>Contest search</h1>
+      <hr className='search__divider' />
+      <form className='search__form d-flex gap-1'>
+        <div className='form-group w-100'>
+          <input
+            type='datetime-local'
+            id='search-input'
+            name='criteria'
+            defaultValue={searchDatetime}
+            className='form-control'
+          />
+        </div>
+        <button type='submit' className='btn btn-primary'>
+          Search
+        </button>
       </form>
-      <ul>
-        {criteria &&
-          contests &&
-          contests.length > 0 &&
-          contests.map(
-            contest =>
-              contest.event && (
-                <li key={contest.uid}>
-                  <Link to={`/details/${contest.uid}`}>
-                    <ContestCard contest={contest} />
-                  </Link>
-                </li>
-              ),
-          )}
-        {criteria && contests && contests.length === 0 && <li>No contests found</li>}
-      </ul>
+      {criteria &&
+        contests &&
+        (contests.length > 0 ? (
+          <ContestList contests={contests} />
+        ) : (
+          <span>No contests found</span>
+        ))}
     </main>
   );
 }

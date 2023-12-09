@@ -1,53 +1,38 @@
 import type { NFLScoreboard, NFLScoreboardEvent } from '~/types/events';
-import scoreboard from './scoreboard.json';
+import * as db from './database/controllers/contest';
 
+/**
+ * Fetches upcoming NFL events from ESPN API. Updates contests database
+ * with new entries as necessary.
+ */
 export async function getScoreboard(): Promise<NFLScoreboard | null> {
-  /* @ts-ignore */
-  return scoreboard as NFLScoreboard;
+  if (!process.env.SCOREBOARD_URL) {
+    throw new Error();
+  }
 
   try {
-    const res = await fetch(`http://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard`);
+    const res = await fetch(process.env.SCOREBOARD_URL);
 
     if (!res.ok) {
       return null;
     }
 
-    return await res.json();
-  } catch {
+    const scoreboard = (await res.json()) as NFLScoreboard;
+
+    for (let event of scoreboard.events) {
+      /* @ts-ignore */
+      await db.createNewContest(event as NFLScoreboardEvent); // TODO: fix?
+    }
+
+    return scoreboard as NFLScoreboard;
+  } catch (e) {
     return null;
   }
 }
 
 /**
  * Performs an HTTP GET request to the ESPN NFL scoreboard
- * endpoint to get upcoming events.
- *
- * @param date
- * @returns
- */
-export async function getEventsByDate(date: string): Promise<NFLScoreboardEvent[]> {
-  if (!date) {
-    return [];
-  }
-
-  const scoreboard = await getScoreboard();
-
-  if (!scoreboard) {
-    return [];
-  }
-
-  const events = scoreboard.events.filter(
-    event => new Date(event.date).getTime() >= new Date(date).getTime(),
-  );
-
-  return events;
-}
-
-/**
- * Performs an HTTP GET request to the ESPN NFL scoreboard
  * endpoint and filters results based on the given event IDs.
- * @param id
- * @returns
  */
 export async function getEventsById(ids: string[]): Promise<NFLScoreboardEvent[] | null> {
   const scoreboard = await getScoreboard();

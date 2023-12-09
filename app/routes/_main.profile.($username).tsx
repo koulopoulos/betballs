@@ -1,12 +1,15 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
-import { Link, isRouteErrorResponse, useLoaderData, useRouteError } from '@remix-run/react';
-import type { ActiveUserProfile } from '~/types/profile';
+import { isRouteErrorResponse, useLoaderData, useRouteError } from '@remix-run/react';
+import type { ActiveUser } from '~/types/user';
 import { getSession } from '~/server/auth';
-import ProfileForm from '~/components/ProfileForm';
-import { getActiveUserProfile, getUserProfile, updateUserProfile } from '~/server/profile';
-import ContestCard from '~/components/ContestCard/ContestCard';
-import { getUserContests } from '~/server/contests';
+import ProfileForm from '~/components/ProfileForm/ProfileForm';
+import { getActiveUser, getUser, updateUser } from '~/server/user';
+import ContestList from '~/components/ContestList/ContestList';
+import { deleteBet } from '~/server/bet';
+import '../styles/profile.css';
+import BetTable from '~/components/BetTable/BetTable';
+import { getContestsByUser } from '~/server/contests';
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const session = await getSession(request.headers.get('Cookie'));
@@ -21,28 +24,38 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
   try {
     if (!params?.username || username === params.username) {
-      const profile = await getActiveUserProfile(username);
-      const contests = await getUserContests(username);
+      const user = await getActiveUser(username);
+      const contests = await getContestsByUser(username);
       return json({
         profile: {
-          username: profile.username,
-          email: profile.email,
-          phone: profile.phone,
+          username: user.username,
+          email: user.email,
+          phone: user.phone,
         },
         contests,
+        bets: user.bets,
         isActiveUser: true,
+        isActiveUserAdmin: user.role === 'ADMIN',
       });
     }
 
-    const profile = await getUserProfile(params.username);
-    const contests = await getUserContests(params.username);
+    let isActiveUserAdmin = false;
+    if (username) {
+      const activeUser = await getActiveUser(username);
+      isActiveUserAdmin = activeUser.role === 'ADMIN';
+    }
+
+    const user = await getUser(params.username);
+    const contests = await getContestsByUser(params.username);
 
     return json({
       profile: {
-        username: profile.username,
+        username: user.username,
       },
       contests,
+      bets: user.bets,
       isActiveUser: false,
+      isActiveUserAdmin,
     });
   } catch {
     throw new Response(null, {
@@ -61,10 +74,20 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   const body = await request.formData();
+  const _action = body.get('_action');
+
+  if (_action === 'CANCEL_BET') {
+    const uid = body.get('betId');
+    if (uid) {
+      await deleteBet(uid.toString());
+    }
+    return null;
+  }
+
   const email = body.get('email');
   const phone = body.get('phone');
 
-  await updateUserProfile(username, {
+  await updateUser(username, {
     email: email ? email.toString() : undefined,
     phone: phone ? phone.toString() : undefined,
   });
@@ -73,24 +96,33 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function Profile() {
-  const { profile, contests, isActiveUser } = useLoaderData<typeof loader>();
+  const { profile, contests, bets, isActiveUser, isActiveUserAdmin } =
+    useLoaderData<typeof loader>();
 
   return (
-    <main>
-      <h1>{profile.username}</h1>
-      {isActiveUser && <ProfileForm profile={profile as ActiveUserProfile} />}
-      <ul>
-        {contests.map(
-          contest =>
-            contest.event && (
-              <li key={contest.uid}>
-                <Link to={`/details/${contest.uid}`}>
-                  <ContestCard key={contest.uid} contest={contest} />
-                </Link>
-              </li>
-            ),
-        )}
-      </ul>
+    <main className='profile__wrapper'>
+      <h1 className='profile__title'>{isActiveUser ? 'Your profile' : profile.username}</h1>
+      <hr className='profile__divider' />
+      {isActiveUser && (
+        <>
+          <h2 className='h5 fw-bold'>Personal information</h2>
+          <ProfileForm profile={profile as ActiveUser} />
+          <hr className='profile__divider' />
+        </>
+      )}
+      {isActiveUser || isActiveUserAdmin ? (
+        <div className='profile__bet-history row'>
+          <h2 className='h5 fw-bold'>Active bets</h2>
+          <div className='col-md-6 table-responsive'>
+            <BetTable bets={bets} />
+          </div>
+        </div>
+      ) : (
+        <>
+          <h2 className='h5 fw-bold'>Active contests</h2>
+          <ContestList contests={contests} />
+        </>
+      )}
     </main>
   );
 }

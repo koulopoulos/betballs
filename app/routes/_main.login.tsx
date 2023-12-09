@@ -1,5 +1,6 @@
 import { redirect, type ActionFunctionArgs, type LoaderFunctionArgs, json } from '@remix-run/node';
 import { commitSession, getSession, isValidLogin } from '~/server/auth';
+import '../styles/login.css';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const session = await getSession(request.headers.get('Cookie'));
@@ -23,8 +24,8 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const body = await request.formData();
 
-  const username = body.get('username');
-  const password = body.get('password');
+  const username = body.get('login-username');
+  const password = body.get('login-password');
 
   if (!username || !password) {
     return null;
@@ -47,18 +48,46 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function Login() {
   return (
-    <main>
-      <h1>Login</h1>
+    <main className='login__wrapper'>
+      <h1 className='login__title'>Login</h1>
+      <hr className='login__divider' />
       <form method='post'>
-        <div>
-          <label htmlFor='username'>Username</label>
-          <input id='username' name='username' type='text' />
+        <fieldset className='row mb-3'>
+          <label htmlFor='loginUsername' className='col-md-2 col-form-label fw-bold'>
+            Username
+          </label>
+          <div className='col-md-4'>
+            <input
+              id='loginUsername'
+              type='text'
+              name='login-username'
+              placeholder='Username'
+              className='form-control'
+            />
+          </div>
+        </fieldset>
+        <fieldset className='row mb-3'>
+          <label htmlFor='loginPassword' className='col-md-2 col-form-label fw-bold'>
+            Password
+          </label>
+          <div className='col-md-4'>
+            <input
+              id='loginPassword'
+              type='password'
+              name='login-password'
+              placeholder='Password'
+              className='form-control'
+            />
+          </div>
+        </fieldset>
+        <div className='row'>
+          <div className='col-md-2'></div>
+          <div className='col-md-4'>
+            <button type='submit' className='btn btn-primary'>
+              Login
+            </button>
+          </div>
         </div>
-        <div>
-          <label htmlFor='password'>Password</label>
-          <input id='password' name='password' type='password' />
-        </div>
-        <button type='submit'>Login</button>
       </form>
     </main>
   );

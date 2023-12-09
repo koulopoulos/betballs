@@ -1,36 +1,56 @@
 import type { Contest } from '~/types/contest';
-import { getEventsByDate, getEventsById } from './events';
-import * as db from '../db/db';
+import { getEventsById } from './events';
+import * as db from './database/controllers/contest';
 
 export async function getContestById(id: string): Promise<Contest> {
-  const contest = await db.getContestById(id);
-  const events = await getEventsById([contest.eventId]);
+  const contest = await db.getContest(id);
+  const events = await getEventsById([contest.id]);
 
   if (!events || events?.length === 0) {
     throw new Error('Event not found');
   }
 
   return {
-    ...contest,
+    id: contest.id,
+    name: contest.name,
+    date: contest.date.toString(),
+    bets: contest.bets.map(bet => ({
+      uid: bet.uid,
+      amount: bet.amount,
+      winner: bet.winner,
+      user: bet.user,
+      contest: { ...bet.contest, date: contest.date.toString() },
+    })),
     event: events[0],
-  } as Contest;
+  };
 }
 
-export async function getUserContests(username: string): Promise<Contest[]> {
-  const contests = await db.getUserContests(username);
-  const events = await getEventsById(contests.map(contest => contest.eventId));
+export async function getContestsByUser(username: string): Promise<Contest[]> {
   let res: Contest[] = [];
 
-  if (!events || events.length === 0) {
+  if (!username) {
     return res;
   }
 
-  for (let event of events) {
-    const contest = contests.find(contest => contest.eventId === event.id);
-    if (contest) {
+  const contests = await db.getContestsByUser(username);
+  const events = await getEventsById(contests.map(contest => contest.id));
+
+  if (!events || events.length <= 0) {
+    return res;
+  }
+
+  for (let contest of contests) {
+    const event = events.find(event => event.id === contest.id);
+    if (event) {
       res.push({
+        id: contest.id,
+        name: contest.name,
+        date: contest.date.toString(),
+        bets: contest.bets.map(bet => ({
+          ...bet,
+          contest: { ...bet.contest, date: contest.date.toString() },
+        })),
         event,
-        ...contest,
       });
     }
   }
@@ -45,20 +65,34 @@ export async function getUserContests(username: string): Promise<Contest[]> {
  * @returns
  */
 export async function getContestsByDate(date: string): Promise<Contest[]> {
+  let res: Contest[] = [];
+
   if (!date) {
-    return [];
+    return res;
   }
 
-  const events = await getEventsByDate(date);
+  const contests = await db.getContestsByDate(date);
+  const events = await getEventsById(contests.map(contest => contest.id));
 
-  // TODO: Join Contests DB with Events
-  const contests = events.map(event => ({
-    uid: event.id,
-    participants: [],
-    bets: [],
-    date: event.date,
-    event,
-  }));
+  if (!events || events.length <= 0) {
+    return res;
+  }
 
-  return contests;
+  for (let contest of contests) {
+    const event = events.find(event => event.id === contest.id);
+    if (event) {
+      res.push({
+        id: contest.id,
+        name: contest.name,
+        date: contest.date.toString(),
+        bets: contest.bets.map(bet => ({
+          ...bet,
+          contest: { ...bet.contest, date: contest.date.toString() },
+        })),
+        event,
+      });
+    }
+  }
+
+  return res;
 }

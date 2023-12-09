@@ -1,6 +1,6 @@
 import { createCookieSessionStorage } from '@remix-run/node';
 import bcrypt from 'bcryptjs';
-import * as db from '~/db/db';
+import * as db from './database/controllers/user';
 
 const sessionSecret = process.env.SESSION_SECRET;
 
@@ -37,5 +37,9 @@ export async function isValidLogin(username: string, password: string) {
 }
 
 export async function isUser(username: string) {
-  return await db.isUser(username);
+  return !!(await db.getUser(username));
+}
+
+export async function createUser(username: string, password: string, email: string, phone: string) {
+  return await db.createUser(username, password, email, phone);
 }

@@ -13,9 +13,9 @@ export default function ContestList({ contests }: ContestListProps) {
       {contests.map(
         contest =>
           contest.event && (
-            <li key={contest.uid} className='contest-list__item'>
-              <Link to={`/details/${contest.uid}`}>
-                <ContestCard key={contest.uid} contest={contest} />
+            <li key={contest.id} className='contest-list__item'>
+              <Link to={`/details/${contest.id}`}>
+                <ContestCard key={contest.id} contest={contest} />
               </Link>
             </li>
           ),

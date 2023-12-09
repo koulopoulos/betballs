@@ -9,19 +9,20 @@ export type MainOutletContext = {
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const session = await getSession(request.headers.get('Cookie'));
+  const username = session.get('username');
 
-  if (!session.has('username')) {
-    return { isLoggedIn: false };
+  if (!username) {
+    return { isLoggedIn: false, username: null };
   }
 
-  return { isLoggedIn: true };
+  return { isLoggedIn: true, username };
 }
 
 export default function Main() {
-  const { isLoggedIn } = useLoaderData<typeof loader>();
+  const { isLoggedIn, username } = useLoaderData<typeof loader>();
   return (
     <>
-      <Header isLoggedIn={isLoggedIn} />
+      <Header isLoggedIn={isLoggedIn} username={username} />
       <Outlet context={{ isLoggedIn }} />
     </>
   );

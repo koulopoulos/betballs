@@ -1,6 +1,51 @@
 .main__wrapper {
     display: flex;
     flex-direction: column;
+    background-color: #226F54;
+}
+
+.main__hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5vw;
+    justify-content: center;
+    background: url('public/hero.png');
+    background-size: cover;
+    background-position: bottom center;
+    padding: 2em;
+    aspect-ratio: 2.5;
+}
+
+.main__hero-texture {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-repeat: repeat;
+    background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+    mix-blend-mode: multiply;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.main__hero-title {
+    font-size: 3vw;
+    line-height: 1.33;
+    font-weight: 600;
+    color: #F0F0F0;
+    max-width: 40%;
+}
+
+.main__hero-logo {
+    height: 2vw;
+}
+
+.main__content {
+    display: flex;
+    flex-direction: column;
     padding: 2em;
     gap: 2em;
     background-color: #FAFAFA;
@@ -15,7 +60,7 @@
     display: block;
     height: 1px;
     border: 0;
-    border-top: 1px solid #EAEAEA;
+    border-top: 1px solid #AAA;
     margin: 0;
     padding: 0;
 }

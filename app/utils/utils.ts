@@ -1,3 +1,6 @@
+import { Contest } from '~/types/contest';
+import { NFLScoreboardEvent } from '~/types/events';
+
 export function formatEventDate(date: string) {
   const d = new Date(date);
   const formatter = new Intl.DateTimeFormat('en-US', {
@@ -28,4 +31,18 @@ export function lightenHexColor(color: string, percent: number) {
   )
     .toString(16)
     .slice(1);
+}
+
+export function getEventTeamNameById(id: string, event: NFLScoreboardEvent) {
+  const competitors = event.competitions.at(0)?.competitors;
+  const competitor = competitors?.find(competitor => competitor.team.id === id);
+  const name = competitor?.team.displayName;
+  if (!name) {
+    throw new Error();
+  }
+  return name;
+}
+
+export function sortContestsByDate(contests: Contest[]) {
+  return contests.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 }

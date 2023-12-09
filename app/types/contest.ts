@@ -2,15 +2,25 @@ import type { NFLScoreboardEvent } from './events';
 
 export type Bet = {
   uid: string;
-  forId: string;
-  userId: string;
   amount: number;
+  winner: {
+    id: string;
+    name: string;
+  };
+  user: {
+    username: string;
+  };
+  contest: {
+    id: string;
+    name: string;
+    date: string;
+  };
 };
 
 export type Contest = {
-  uid: string;
-  participants: string[];
-  bets: string[];
+  id: string;
+  name: string;
   date: string;
   event: NFLScoreboardEvent;
+  bets: Bet[];
 };
