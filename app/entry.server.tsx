@@ -18,7 +18,8 @@ let db: typeof mongoose;
 
 async function connect() {
   if (db) return db;
-  db = await mongoose.connect('mongodb://127.0.0.1:27017/betballs');
+  if (!process.env.MONGO_URL) throw new Error();
+  db = await mongoose.connect(process.env.MONGO_URL);
 }
 
 connect();
